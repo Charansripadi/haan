@@ -49,13 +49,14 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--scores", default=ROOT / "results/telephony_scores", type=Path)
     ap.add_argument("--out", default=ROOT / "results/telephony_report.md", type=Path)
+    ap.add_argument("--title", default="Smart Turn v3.2 (CPU INT8 ONNX)", help="which model/arm was scored")
     args = ap.parse_args()
 
     df = pd.concat([pd.read_parquet(p) for p in sorted(args.scores.glob("*.parquet"))], ignore_index=True)
     lines = [
-        "# Smart Turn v3.2 on telephone audio",
+        f"# {args.title} on telephone audio",
         "",
-        f"Clips: {len(df):,}. Model: smart-turn-v3.2-cpu.onnx, threshold 0.5. Metrics in %.",
+        f"Clips: {len(df):,}. Threshold 0.5. Metrics in %.",
         "Positive class = turn complete. FPR = cut the speaker off; FNR = waited on a finished turn.",
         "",
         "## Overall",
