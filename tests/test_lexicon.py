@@ -23,3 +23,18 @@ def test_jobs_have_unique_ids_and_known_speakers():
     assert len({j["id"] for j in jobs}) == len(jobs)
     assert all(j["speaker"] in SPEAKERS[j["lang"]] for j in jobs)
     assert tts_jobs() == jobs  # deterministic
+
+
+def test_transcript_baselines():
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    from baseline_asr import classify
+
+    assert classify("Mm-hmm.")["keywords"] == "backchannel"
+    assert classify("हाँ जी")["keywords"] == "backchannel"
+    assert classify("okay but wait")["keywords"] == "interrupt"
+    assert classify("okay but wait")["min_words"] == "interrupt"
+    assert classify("wait")["min_words"] == "backchannel"  # why word counts fail on short interruptions
+    assert classify("")["keywords"] == "interrupt"
