@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import os
 import sys
 import zlib
 from pathlib import Path
@@ -18,6 +19,11 @@ import numpy as np
 import soundfile as sf
 import torch
 from scipy.signal import resample_poly
+
+# parler-tts pins an older transformers, which would import Colab's TensorFlow
+# (and crash on the protobuf it downgrades). TTS only needs PyTorch.
+os.environ.setdefault("USE_TF", "0")
+os.environ.setdefault("TRANSFORMERS_NO_TF", "1")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from haan.lexicon import tts_jobs  # noqa: E402
