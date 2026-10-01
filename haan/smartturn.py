@@ -52,3 +52,24 @@ class SmartTurn:
 
     def predict_proba(self, batch: list[np.ndarray]) -> np.ndarray:
         return self.score(self.featurize(batch))
+
+
+class TorchSmartTurn(SmartTurn):
+    """Same preprocessing, scored by a PyTorch state dict (GPU if available)."""
+
+    def __init__(self, weights: str | Path):
+        import torch
+
+        from haan.model import SmartTurnModel
+
+        self.torch = torch
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model = SmartTurnModel()
+        self.model.load_state_dict(torch.load(weights, map_location="cpu"))
+        self.model.to(self.device).eval()
+        self.features = WhisperFeatureExtractor(chunk_length=WINDOW_S)
+
+    def score(self, feats: np.ndarray) -> np.ndarray:
+        with self.torch.no_grad():
+            x = self.torch.from_numpy(feats).to(self.device)
+            return self.torch.sigmoid(self.model(x)).float().cpu().numpy()

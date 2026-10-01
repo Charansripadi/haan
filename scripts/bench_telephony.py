@@ -23,7 +23,7 @@ import soundfile as sf
 from scipy.signal import resample_poly
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from haan.smartturn import SR, SmartTurn  # noqa: E402
+from haan.smartturn import SR, SmartTurn, TorchSmartTurn  # noqa: E402
 from haan.telephony import CHANNELS, simulate  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,10 +45,11 @@ def main() -> None:
     ap.add_argument("--out", default=ROOT / "results/telephony_scores", type=Path)
     ap.add_argument("--every", type=int, default=1, help="keep every k-th clip")
     ap.add_argument("--batch", type=int, default=64)
+    ap.add_argument("--torch-weights", type=Path, help="score a fine-tuned model.pt instead of the ONNX file")
     args = ap.parse_args()
 
     args.out.mkdir(parents=True, exist_ok=True)
-    model = SmartTurn(args.model, threads=4)
+    model = TorchSmartTurn(args.torch_weights) if args.torch_weights else SmartTurn(args.model, threads=4)
     shards = sorted(args.data.glob("*.parquet"))
     if not shards:
         sys.exit(f"no parquet shards in {args.data}")

@@ -7,3 +7,4 @@ ref/
 results_bench.log
 .pytest_cache/
 .env
+runs/

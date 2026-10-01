@@ -1,0 +1,12 @@
+numpy
+scipy
+soundfile
+pandas
+pyarrow
+tabulate
+onnx
+onnxruntime
+transformers>=5.0
+huggingface_hub
+torch
+pytest
