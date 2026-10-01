@@ -1,0 +1,23 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install (CPU-only PyTorch)
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install numpy scipy soundfile pandas pyarrow tabulate onnx onnxruntime "transformers>=5.0" huggingface_hub requests pytest
+      - name: Fetch the published Smart Turn v3.2 FP32 ONNX (32 MB) for the weight-recovery test
+        run: python -c "from huggingface_hub import hf_hub_download; hf_hub_download('pipecat-ai/smart-turn-v3', 'smart-turn-v3.2-gpu.onnx', local_dir='models')"
+      - name: Tests
+        run: python -m pytest -q

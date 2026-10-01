@@ -1,4 +1,4 @@
-# Smart Turn v3.2 on telephone audio
+# original Smart Turn v3.2 (CPU INT8 ONNX, first 4 of 10 test shards) on telephone audio
 
 Clips: 12,612. Model: smart-turn-v3.2-cpu.onnx, threshold 0.5. Metrics in %.
 Positive class = turn complete. FPR = cut the speaker off; FNR = waited on a finished turn.
